@@ -49,6 +49,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency('rubocop-rspec', '~> 1.44')
   spec.add_development_dependency('simplecov')
   spec.add_development_dependency('yard')
+  spec.add_development_dependency('aws-sdk-s3')
 
   spec.homepage = 'http://prawnpdf.org'
   spec.description = <<END_DESC

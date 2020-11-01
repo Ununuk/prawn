@@ -143,7 +143,7 @@ module Prawn
     #
     def self.generate(filename, options = {}, &block)
       pdf = new(options, &block)
-      pdf.render_file(filename)
+      pdf.render_file(filename, true)
     end
 
     # Creates a new PDF Document.  The following options are available (with
@@ -405,8 +405,26 @@ module Prawn
     #
     #   pdf.render_file "foo.pdf"
     #
-    def render_file(filename)
-      File.open(filename, 'wb') { |f| render(f) }
+    def render_file(filename, to_s3 = false)
+      if to_s3
+        render_file_to_s
+      else
+        File.open(filename, 'wb') { |f| render(f) }
+      end
+    end
+
+    def render_file_to_s
+      Aws.config.update(
+        region: ENV['AWS_REGION'],
+        credentials: Aws::Credentials.new(ENV['AWS_ACCESS_KEY_ID'],
+                                          ENV['AWS_SECRET_ACCESS_KEY'])
+      )
+
+      bucket = Aws::S3::Resource.new.bucket(ENV['S3_BUCKET'])
+
+      object = bucket.object("pdfs/#{DateTime.current}.pdf")
+      object.put(body: render, acl: 'public-read')
+      object.public_url
     end
 
     # The bounds method returns the current bounding box you are currently in,
