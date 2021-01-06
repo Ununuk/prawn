@@ -423,7 +423,7 @@ module Prawn
       bucket = Aws::S3::Resource.new.bucket(ENV['S3_BUCKET'])
 
       object = bucket.object("pdfs/#{DateTime.current}.pdf")
-      object.put(body: render, acl: 'public-read')
+      object.put(body: render, acl: 'public-read', content_disposition: 'inline', content_type: 'application/pdf')
       object.public_url
     end
 
